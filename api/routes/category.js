@@ -3,14 +3,13 @@ const router = express.Router();
 const Category = require('../models/category')
 const mongoose = require('mongoose');
 
-
 // all category
 router.get('/all', (req, res, next) => {
-    console.log("all /GET called")
+    //console.log("all /GET called")
     Category.find()
         .exec()
         .then( docs => {
-            console.log(docs)
+            //console.log(docs)
             res.status(200).json(docs);
         })
         .catch(err => {
@@ -22,14 +21,14 @@ router.get('/all', (req, res, next) => {
 });
 // for a user
 router.get('/usercategories/:uid', (req, res, next) => {
-    console.log("for a user /GET called")
+    //console.log("for a user /GET called")
 	
 	const uid = req.params.uid;
 	//console.log(uid)
     Category.find({"userID": uid})
         .exec()
         .then( docs => {
-            console.log(docs)
+            //console.log(docs)
             res.status(200).json(docs);
         })
         .catch(err => {
@@ -41,9 +40,8 @@ router.get('/usercategories/:uid', (req, res, next) => {
 });
 // post method at route /Category
 router.post('/usercategory', (req, res, next) => {
-    console.log("/POST category")
+    //console.log("/POST category")
 	
-	//const uid = req.params.uid;
     const category = new Category({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
@@ -54,7 +52,7 @@ router.post('/usercategory', (req, res, next) => {
     category
         .save()
         .then(result => {
-            console.log(result);
+            //console.log(result);
             res.status(201).json({
                 message: 'Handling POST requests to /category',
                 Createdcategory: category
@@ -64,13 +62,13 @@ router.post('/usercategory', (req, res, next) => {
 });
 // get a perticular category
 router.get('/usercategory/:categoryID', (req, res, next) => {
-    console.log("/GET by ID category")
+    //console.log("/GET by ID category")
 
     const id = req.params.categoryID;
     Category.findById(id)
         .exec()
         .then(doc => {
-            console.log(doc);
+            //console.log(doc);
             if(doc){
                 res.status(200).json(doc);
             } else {
@@ -87,7 +85,7 @@ router.get('/usercategory/:categoryID', (req, res, next) => {
 });
 // update a category
 router.patch('/usercategory/:categoryID', (req, res, next) => {
-    console.log("/PATCH by id category")
+    //console.log("/PATCH by id category")
 
     const id = req.params.categoryID;
     const category = new Category({
@@ -109,7 +107,8 @@ router.patch('/usercategory/:categoryID', (req, res, next) => {
 });
 // delete a category
 router.delete('/usercategory/:categoryID', (req, res, next) => {
-    console.log("/DELETE called category")
+    //console.log("/DELETE called category");
+
     const id = req.params.categoryID;
     Category.remove({_id: id})
         .exec()
