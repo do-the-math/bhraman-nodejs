@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 
 // all category
-router.get('/', (req, res, next) => {
+router.get('/all', (req, res, next) => {
     console.log("all /GET called")
     Category.find()
         .exec()
@@ -20,13 +20,34 @@ router.get('/', (req, res, next) => {
             });
         })
 });
-
+// for a user
+router.get('/usercategories/:uid', (req, res, next) => {
+    console.log("for a user /GET called")
+	
+	const uid = req.params.uid;
+	//console.log(uid)
+    Category.find({"userID": uid})
+        .exec()
+        .then( docs => {
+            console.log(docs)
+            res.status(200).json(docs);
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+        })
+});
 // post method at route /Category
-router.post('/', (req, res, next) => {
+router.post('/usercategory', (req, res, next) => {
     console.log("/POST category")
+	
+	//const uid = req.params.uid;
     const category = new Category({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
+		userID: req.body.userID,
         count: req.body.count,
         date: req.body.date
     })
@@ -40,11 +61,9 @@ router.post('/', (req, res, next) => {
             });
         })
         .catch(err => console.log(err));
-
-
 });
-
-router.get('/:categoryID', (req, res, next) => {
+// get a perticular category
+router.get('/usercategory/:categoryID', (req, res, next) => {
     console.log("/GET by ID category")
 
     const id = req.params.categoryID;
@@ -56,7 +75,7 @@ router.get('/:categoryID', (req, res, next) => {
                 res.status(200).json(doc);
             } else {
                 res.status(404).json({
-                    message: "ID not valid"
+					message: "ID not valid"
                 })
             }
         })
@@ -66,13 +85,11 @@ router.get('/:categoryID', (req, res, next) => {
         });
 
 });
-
-
-router.patch('/:categoryID', (req, res, next) => {
+// update a category
+router.patch('/usercategory/:categoryID', (req, res, next) => {
     console.log("/PATCH by id category")
 
     const id = req.params.categoryID;
-
     const category = new Category({
         _id: req.body._id,
         name: req.body.name,
@@ -90,9 +107,8 @@ router.patch('/:categoryID', (req, res, next) => {
             });
         });
 });
-
-
-router.delete('/:categoryID', (req, res, next) => {
+// delete a category
+router.delete('/usercategory/:categoryID', (req, res, next) => {
     console.log("/DELETE called category")
     const id = req.params.categoryID;
     Category.remove({_id: id})
