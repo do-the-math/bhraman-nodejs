@@ -99,6 +99,35 @@ router.get('/usercontact/:uid/:categoryID', (req, res, next) => {
         });
 
 });
+// GET ALL Contacts with CategoryID (orderBy updated At)
+router.get('/usercontact/order/:uid/:categoryID', (req, res, next) => {
+    var categoryID = req.params.categoryID;
+    const uid = req.params.uid;
+    console.log("/GET   "+categoryID +" called categoryID")
+    
+    Contact.find({
+                "categoryID": categoryID,
+                "userID": uid
+            })
+        .sort({"updatedAt": -1})
+        .exec()
+        .then(doc => {
+            console.log(doc);
+            if(doc){
+                res.status(200).json(doc);
+            } else {
+                res.status(404).json({
+                    message: "ID not valid contact"
+                })
+            }
+            // res.status(200).json(doc);
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({error: err});
+        });
+
+});
 // GET one contact by ID
 router.get('/usercontact/:contactID', (req, res, next) => {
     var contactID = req.params.contactID;

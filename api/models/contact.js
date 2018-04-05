@@ -15,6 +15,9 @@ const contactSchema = mongoose.Schema({
 		lat: Number,
 		lng: Number
 	}
+},
+{
+    timestamps: true
 })
 
 module.exports = mongoose.model('Contact', contactSchema);
