@@ -4,6 +4,11 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const config = require('../config/database.js');
 const User = require('../models/user.js');
+const resetlink = require('../models/reset.js');
+const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
+const mongoose = require('mongoose');
+
 
 // Register
 router.post('/register', (req, res, next) => {
@@ -56,6 +61,118 @@ router.post('/authenticate', (req, res, next) => {
     });
   });
 });
+
+
+// POST to generate a link to Email the user
+router.post("/fp", (req, res, next) => {
+  const username = req.body.username;
+  console.log(username)
+
+  // res.json({success: true, msg: 'url hit', username: username});
+
+
+  User.getUserByUsername(username, (err, user) => {
+    if(err) throw err;
+    if(!user) {
+      return res.json({success: false, msg: 'User not found'});
+    }
+
+    myLink = new resetlink({
+      linkString: user._id,
+      _id: new mongoose.Types.ObjectId()
+    });
+    console.log(myLink)
+
+    // res.json({success: true, msg: 'url hit', username: username, userid: user._id});
+
+    myLink.save()
+          .then(result => {
+              console.log(result);
+              var transporter = nodemailer.createTransport({
+                service: 'Gmail',
+                auth: {
+                    user: '', // Your email id
+                    pass: '' // Your password
+                }
+              });
+              var mailOptions = {
+                  from: 'aman.sharefiles@gmail.com',
+                  to: 'aman.on9@gmail.com', 
+                  subject: 'forgot password', // Subject line
+                  html: "<a href=http://localhost:4200/reset/" +user._id +">Click here to reset</a>" // You can choose to send an HTML body instead
+              };
+
+              transporter.sendMail(mailOptions, function(error, info){
+                  if(error){
+                      console.log(error);
+                      res.json({yo: 'error'});
+                  }else{
+                      console.log('Message sent: ' + info.response);
+                      res.json({yo: info.response});
+                  };
+              });
+          })
+          .catch(err =>{ console.log(err); console.log("error in save link")});
+  });
+});
+
+
+
+// Patch User to reset Password
+router.patch('/resetpassword/:userId', (req, res, next) => {
+  const password = req.body.password;
+  const userId = req.params.userId;
+  console.log(userId);
+
+  // find in the LINK table and calculate the time difference
+  // between the link creation time and present time
+  // if time is greater than 24hr then return failure
+  // resetlink.find({})
+
+
+  User.findOne({_id: userId})
+    .exec()
+    .then(doc => {
+        // console.log(doc);
+        if(doc){
+          let newUser = new User();
+          newUser = doc;
+          newUser.password = req.body.password;
+
+          console.log(newUser)
+          // res.json({user: newUser});
+
+          bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(newUser.password, salt, (err, hash) => {
+              if(err) throw err;
+              newUser.password = hash;
+              User.update({_id: userId}, newUser)
+                .exec()
+                .then( result => {
+                    res.status(200).json(result);
+                })
+                .catch( err =>{
+                    console.log(err)
+                    res.status(500).json({
+                        error: err
+                    });
+                });
+            });
+          });
+
+        } else {
+            res.status(404).json({
+                message: "userId not valid contact"
+            })
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({error: err});
+    });
+          
+});
+
 
 // Profile
 router.get('/profile', passport.authenticate('jwt', {session:false}), (req, res, next) => {
