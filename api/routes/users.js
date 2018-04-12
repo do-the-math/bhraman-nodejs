@@ -91,15 +91,15 @@ router.post("/fp", (req, res, next) => {
               var transporter = nodemailer.createTransport({
                 service: 'Gmail',
                 auth: {
-                    user: '', // Your email id
-                    pass: '' // Your password
+                    user: 'enter username', // Your email id
+                    pass: 'enter password' // Your password
                 }
               });
               var mailOptions = {
                   from: 'aman.sharefiles@gmail.com',
                   to: 'aman.on9@gmail.com', 
                   subject: 'forgot password', // Subject line
-                  html: "<a href=http://localhost:4200/reset/" +user._id +">Click here to reset</a>" // You can choose to send an HTML body instead
+                  html: "<a href=http://localhost:4200/reset/" +user._id +">Click here to reset password</a>" // You can choose to send an HTML body instead
               };
 
               transporter.sendMail(mailOptions, function(error, info){
