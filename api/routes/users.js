@@ -44,6 +44,7 @@ router.post('/authenticate', (req, res, next) => {
       if(isMatch) {
         const token = jwt.sign({data: user}, config.secret, {
           expiresIn: 604800 // 1 week
+          // expiresIn: 30 // 30 seconds
         });
         res.json({
           success: true,
@@ -65,12 +66,11 @@ router.post('/authenticate', (req, res, next) => {
 
 // POST to generate a link to Email the user
 router.post("/fp", (req, res, next) => {
-  const username = req.body.username;
-  console.log(username)
-
   // res.json({success: true, msg: 'url hit', username: username});
+  const username = req.body.username;
+  // console.log(username)
 
-
+  
   User.getUserByUsername(username, (err, user) => {
     if(err) throw err;
     if(!user) {
@@ -81,26 +81,28 @@ router.post("/fp", (req, res, next) => {
       linkString: user._id,
       _id: new mongoose.Types.ObjectId()
     });
-    console.log(myLink)
 
+    // console.log(myLink)
     // res.json({success: true, msg: 'url hit', username: username, userid: user._id});
 
     myLink.save()
           .then(result => {
-              console.log(result);
+              // console.log(result);
               var transporter = nodemailer.createTransport({
                 service: 'Gmail',
                 auth: {
-                    user: 'enter username', // Your email id
-                    pass: 'enter password' // Your password
+                    user: 'apptest@ggktech.com', // Your email id
+                    pass: 'Hyderabad007' // Your password
                 }
               });
               var mailOptions = {
-                  from: 'aman.sharefiles@gmail.com',
-                  to: 'aman.on9@gmail.com', 
-                  subject: 'forgot password', // Subject line
-                  html: "<a href=http://localhost:4200/reset/" +user._id +">Click here to reset password</a>" // You can choose to send an HTML body instead
+                  from: 'apptest@ggktech.com',  // sender
+                  to: user.email, // reciever 
+
+                  subject: 'Tour App: forgot password',
+                  html: "<a href=https://tourapp-c65f9.firebaseapp.com/reset/" +user._id +">Click here to reset password</a>"  
               };
+              // html: "<a href=http://localhost:4200/reset/" +user._id +">Click here to reset password</a>",
 
               transporter.sendMail(mailOptions, function(error, info){
                   if(error){
@@ -159,7 +161,6 @@ router.patch('/resetpassword/:userId', (req, res, next) => {
                 });
             });
           });
-
         } else {
             res.status(404).json({
                 message: "userId not valid contact"
@@ -170,7 +171,6 @@ router.patch('/resetpassword/:userId', (req, res, next) => {
         console.log(err);
         res.status(500).json({error: err});
     });
-          
 });
 
 

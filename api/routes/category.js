@@ -10,7 +10,7 @@ router.get('/all', (req, res, next) => {
     Category.find()
         .exec()
         .then( docs => {
-            console.log(docs)
+            // console.log(docs)
             res.status(200).json(docs);
         })
         .catch(err => {
@@ -25,11 +25,10 @@ router.get('/usercategories/:uid', (req, res, next) => {
     console.log("for a user /GET called")
 	
 	const uid = req.params.uid;
-	//console.log(uid)
     Category.find({"userID": uid})
         .exec()
         .then( docs => {
-            console.log(docs)
+            // console.log(docs)
             res.status(200).json(docs);
         })
         .catch(err => {
@@ -54,7 +53,7 @@ router.post('/usercategory', (req, res, next) => {
     category
         .save()
         .then(result => {
-            console.log(result);
+            // console.log(result);
             res.status(201).json({
                 message: 'Handling POST requests to /category',
                 Createdcategory: category
@@ -110,6 +109,7 @@ router.patch('/usercategory/:categoryID', (req, res, next) => {
 // delete a category
 router.delete('/usercategory/:categoryID', (req, res, next) => {
     console.log("/DELETE called category")
+
     const id = req.params.categoryID;
     Category.remove({_id: id})
         .exec()

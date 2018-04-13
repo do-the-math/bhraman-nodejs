@@ -11,7 +11,7 @@ router.get('/all', (req, res, next) => {
     Contact.find()
         .exec()
         .then( docs => {
-            console.log(docs)
+            // console.log(docs)
             res.status(200).json(docs);
         })
         .catch(err => {
@@ -23,13 +23,13 @@ router.get('/all', (req, res, next) => {
 });
 // all contacts for a user
 router.get('/usercontacts/:uid', (req, res, next) => {
-    console.log("A user /GET called")
+    console.log("A user Contact /GET called ")
 	
 	const uid = req.params.uid;
     Contact.find({"userID": uid })
         .exec()
         .then( docs => {
-            console.log(docs)
+            // console.log(docs)
             res.status(200).json(docs);
         })
         .catch(err => {
@@ -42,10 +42,7 @@ router.get('/usercontacts/:uid', (req, res, next) => {
 
 // POST method at route /Contact
 router.post('/usercontact', (req, res, next) => {
-    console.log("/POST called here")
-	
-    /* console.log(req.body)
-    console.log("\n") */
+    console.log("/POST called Contact")
 	
 	const uid = req.params.uid;
     const contact = new Contact({
@@ -62,7 +59,7 @@ router.post('/usercontact', (req, res, next) => {
             .then(result => {
                 console.log(result);
                 res.status(201).json({
-                    message: 'Handling POST requests to /contact',
+                    message: 'Handling /POST requests to contact',
                     createdContact: contact
                 });
             })
@@ -82,7 +79,7 @@ router.get('/usercontact/:uid/:categoryID', (req, res, next) => {
 			})
         .exec()
         .then(doc => {
-            console.log(doc);
+            // console.log(doc);
             if(doc){
                 res.status(200).json(doc);
             } else {
@@ -90,7 +87,6 @@ router.get('/usercontact/:uid/:categoryID', (req, res, next) => {
                     message: "ID not valid contact"
                 })
             }
-            // res.status(200).json(doc);
         })
         .catch(err => {
             console.log(err);
@@ -102,7 +98,7 @@ router.get('/usercontact/:uid/:categoryID', (req, res, next) => {
 router.get('/usercontact/order/:uid/:categoryID', (req, res, next) => {
     var categoryID = req.params.categoryID;
     const uid = req.params.uid;
-    console.log("/GET   "+categoryID +" called categoryID")
+    console.log("/GET  "+categoryID +" called categoryID")
     
     Contact.find({
                 "categoryID": categoryID,
@@ -119,7 +115,6 @@ router.get('/usercontact/order/:uid/:categoryID', (req, res, next) => {
                     message: "ID not valid contact"
                 })
             }
-            // res.status(200).json(doc);
         })
         .catch(err => {
             console.log(err);
@@ -130,7 +125,6 @@ router.get('/usercontact/order/:uid/:categoryID', (req, res, next) => {
 // GET one contact by ID
 router.get('/usercontact/:contactID', (req, res, next) => {
     var contactID = req.params.contactID;
-	//const uid = req.params.uid;
     console.log("/GET   "+contactID +" called _id")
     
     Contact.find({
@@ -157,11 +151,8 @@ router.get('/usercontact/:contactID', (req, res, next) => {
 router.get('/usercontactbyname/:name1', (req, res, next) => {
     var name1 = req.params.name1;
     console.log(req.body);
+    console.log("/GET   "+" by name1 "+ name1);
 
-    //const uid = req.params.uid;
-    
-    // name1 = "/^"+name1+"/"
-    console.log("/GET   "+" by name1 "+ name1 )
     Contact.find({
                 name : {$regex : "^" + name1}
             })
