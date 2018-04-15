@@ -96,7 +96,7 @@ router.post("/fp", (req, res, next) => {
                 }
               });
               var mailOptions = {
-                  from: 'apptest@ggktech.com',  // sender
+                  from: 'aman.nidhi@ggktech.com',  // sender
                   to: user.email, // reciever 
 
                   subject: 'Tour App: forgot password',
